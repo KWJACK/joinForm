@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko-KR">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/jqueryui/jquery-ui.css"/>
+  <link rel="stylesheet" href="/stylesheets/style.css" />
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="/jqueryui/jquery-ui.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <title><%= title %></title>
+</head>
+<body>
+  <h1><%= title %></h1>
+  <a href="/board">리스트로 돌아가기</a>
+    <table class="table_list">
+      <colgroup>
+        <col width="15%" />
+        <col width="*" />
+      </colgroup>
+      <tr class="table_col_title">
+        <td class="title_real">작성자</td>
+        <td class="title_content"><%=row.creator_id %></td>
+      </tr>
+      <tr class="table_col_title">
+        <td class="title_real">제목</td>
+        <td class="title_content"><%= row.title %></td>
+      </tr>
+      <tr class="table_col_title">
+        <td class="title_real">조회수</td>
+        <td class="title_content"><%= row.hit %></td>
+      </tr>
+      <tr class="table_col_title">
+        <td class="title_real" >내용</td>
+        <td><textarea rows="10" cols="10" readonly textarea style="width:100%; height:100%; border:0; background:clear;" ><%= row.content %></textarea></td>
+      </tr>
+      <tr class="table_col_title">
+        <td class="title_real">이미지</td>
+        <td class="title_content">
+          <div tyle="width: 120px; height: 90px; overflow: hidden">
+            <img src="../../images/<%=row.image%>" style="width: auto; height: 300px; display:none;" id ="imageOn"/>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" id="hideUser" style="display:none">
+          <div style="float:left; margin-right:20px; margin-left:20px">
+            <form action="/board/update" method="get">
+              <input type="hidden" name="idx" value="<%=row.idx%>">
+              <button id ="btnModify" type="submit" >글 수정</button>
+            </form>
+          </div>
+          <div style="float:left; margin:auto; margin-right:20px">
+            <button id="btnDelete">삭제</button>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <br>
+</body>
+</html>
+  <style>
+    label, input { display:block; }
+    input.text { margin-bottom:12px; width:95%; padding: .4em; }
+    fieldset { padding:0; border:0; margin-top:25px; }
+    .ui-dialog .ui-state-error { padding: .3em; }
+    .validateTips { border: 1px solid transparent; }
+  </style>
+
+  <script>
+  $( function() {
+    if(<%=row.image.length%> >2){
+      $("#imageOn").show();
+    }
+    var dialog, form,
+      password = $( "#mypassword" ),
+      allFields = $( [] ).add( password ),
+      tips = $( ".validateTips" );
+
+    function updateTips( t ) {
+      tips
+        .text( t )
+        .addClass( "ui-state-highlight" );
+      setTimeout(function() {
+        tips.removeClass( "ui-state-highlight", 1500 );
+      }, 500 );
+    }
+
+    function checkLength( o, n, min, max ) {
+      if ( o.val().length > max || o.val().length < min ) {
+        o.addClass( "ui-state-error" );
+        updateTips( "Length of " + n + " must be between " +
+          min + " and " + max + "." );
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    function checkRegexp( o, regexp, n ) {
+      if ( !( regexp.test( o.val() ) ) ) {
+        o.addClass( "ui-state-error" );
+        updateTips( n );
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    function closeDialog() {
+      dialog.dialog( "close" );
+    }
+
+    function confirmPasswd() {
+      var valid = true;
+      allFields.removeClass( "ui-state-error" );
+      valid = valid && checkLength( password, "password", 1, 16 );
+      valid = valid && checkRegexp( password, /^([0-9a-zA-Z])+$/, "Password field only allow : a-z 0-9" );
+
+      if ( valid ) {
+        password = { password: $("#mypassword").val() };
+        $.ajax({
+  						type: 'POST',
+              data: JSON.stringify(password),//오브젝트 형태로 넘김
+  				    contentType: 'application/json',
+              url: 'http://localhost:3000/board/deleteConfirm/<%=row.idx%>',
+              success: function(data) {
+                  alert("삭제완료");
+                  location.href ="http://localhost:3000/board";
+              }
+          });
+      }
+      dialog.dialog( "close" );// 없애면 password.value가 안찍힘 ㅜㅜ
+      return valid;
+    }
+
+    dialog = $( "#dialog-form" ).dialog({//div dialog-form을 dialog로 실행
+      autoOpen: false,
+      height: 300,
+      width: 350,
+      modal: true,
+      buttons: {
+        "확인": confirmPasswd, //function 객체를 넘겨준다.
+        "취소": closeDialog,
+      },
+      close: function() {
+        form[0].reset();
+        allFields.removeClass( "ui-state-error" );
+      }
+    });
+
+    form = dialog.find( "form" ).on( "submit", function( event ) {
+      event.preventDefault();
+      confirmPasswd();
+    });
+
+    //button().on은 jQuery방식. 자동으로 css효과가 입혀짐
+
+    $( "#btnDelete" ).button().on( "click", function() {
+      dialog.dialog( "open" );
+    });
+
+    $("#btnModify").button().on("click", ()=>{
+
+    });
+
+    if(<%=user.length%> < 2){
+
+    }else{
+      $("#hideUser").show();
+
+    }
+    // $( "#create-user" ).click(function(e) { //정석대로 하는 javascript코드
+    //   dialog.dialog( "open" );
+    // });
+  } );
+  </script>
+
+
+
+  <body>
+    <div id="dialog-form" title="Check password" style="display:none">
+      <h3>비밀번호를 입력하면 글이 삭제됩니다</h3>
+      <p class="validateTips"></p>
+      <form>
+        <fieldset>
+          <label for="password">Password</label>
+          <input type="password" name="mypassword" id="mypassword" class="text ui-widget-content ui-corner-all">
+          <!-- Allow form submission with keyboard without duplicating the dialog button -->
+          <input type="submit" tabindex="-1" style="position:absolute; top:-30px">
+        </fieldset>
+      </form>
+    </div>
+  </body>
+</html>

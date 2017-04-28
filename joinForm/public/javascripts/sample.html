@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko-KR">
+<head>
+  <title></title>
+  <style>
+    .tab-menu{
+      list-style: none;
+      height: 80px;
+    }
+    .tab-menu li{
+      width: 99px; height: 40px;
+      background-position-y:  0;
+      /*text-indent: -1000px;*/
+      overflow: hidden;
+      display: inline-block;
+      float: left;
+    }
+    .tab-menu li:hover{
+      background-position-y:  -40px;
+    }
+    .tab-menu li:select {
+      background-position-y:  -8px;
+      height: 80px;
+    }
+  </style>
+
+  <meta charset="UTF-8">
+  <script type="text/javascript" src ="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script>
+    $(document).ready(function(){
+      var tt = $("#tabMenu1 li");
+      $(this).index();
+        console.log($(#))
+    });
+  </script>
+
+</head>
+<body>
+  <ul class="tab-menu" id="tabMenu1">
+    <li class="menuitem1">google</li>
+    <li class="menuitem2">facebook</li>
+    <li class="menuitem3 select">pinterest</li>
+    <li class="menuitem4">twitter</li>
+    <li class="menuitem5">airbnb</li>
+    <li class="menuitem6">path</li>
+  </ul>
+</body>
+
+</html>

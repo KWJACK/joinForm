@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/jqueryui/jquery-ui.css"/>
+  <link rel="stylesheet" href="/stylesheets/style.css" />
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="/jqueryui/jquery-ui.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+<body>
+  <h1><%= title %></h1>
+  <button id="write">글 쓰기</button>
+  <button id="join">회원가입</button>
+  <button id="login" style="display:none"></button>
+  <br>
+  <br>
+  <script type="text/javascript">
+    //  var btnLogin = document.createElement('button');
+    //  btnLogin.id = 'login';
+    //  var btnLogout = document.createElement('a');
+    //  btnLogout.href = '/join/logout';
+
+    //  btnLogin.appendChild(document.createTextNode("로그인"));
+    //  btnLogout.appendChild(document.createTextNode("로그아웃"));
+    if(<%=user.length%> > 1){//로그인 안된 상태
+      //$("#join").after(btnLogin);
+      $("#login").html("로그아웃");
+      $("#login").show();
+    }else{
+      //$("#join").after(btnLogout);
+      $("#login").html("로그인");
+      $("#login").show();
+    }
+
+    $(function(){//jQuery
+      var dialog_login, dialog_newlogin;
+      function closeDialog(){//레이어 팝업 닫는 코드
+        $(this).dialog("close");
+      }
+      function confirmLogout(){//회원가입->확인시 처리
+        location.href ="http://localhost:3000/join/logout";//확인이면 로그아웃
+        $(this).dialog( "close" );
+      }
+
+      // $("#logout").click(function(){
+      //   $.get("http://localhost:3000/join/logout");
+      //   //location.href ="http://localhost:3000/board";
+      // })
+      function confirmLogin(){//로그인버튼->확인시 처리
+        var userinfo = {
+          username: $("#username").val(),
+          password: $("#password").val()
+        };
+        $.ajax({
+  						type: 'POST',
+              data: JSON.stringify(userinfo),
+  				    contentType: 'application/json',
+              url: 'http://localhost:3000/join/login',
+              success: function(data) {
+                  alert("로그인 완료");
+                  location.href ="http://localhost:3000/board";
+              }
+          });
+        $(this).dialog( "close" );
+      }
+
+      function confirmNewLogin(){
+          location.href ="http://localhost:3000/join";
+          $(this).dialog( "close" );
+      }
+
+      dialog_newlogin = $("#dialog-newlogin").dialog({
+        autoOpen: false, //이벤트 발생시 오픈
+        height: 250,
+        width: 300, //넓이
+        modal: true,
+        buttons:{
+              "확인": confirmLogout,
+              "취소": closeDialog,
+            }
+      });
+
+      dialog_login = $("#dialog-login").dialog({
+        autoOpen: false, //이벤트 발생시 오픈
+        height: 250,
+        width: 300, //넓이
+        modal: true,
+        buttons:{
+              "확인": confirmLogin,
+              "취소": closeDialog,
+            }
+      });
+
+      //로그인 안한상태에서 보는 팝업창
+      dialog_write = $("#dialog-write").dialog({
+        autoOpen: false,
+        height: 250,
+        width: 300, //넓이
+        modal: true,
+        buttons:{
+              "가입": confirmNewLogin,//회원가입으로 이동
+              "취소": closeDialog,//창 닫기
+            }
+      });
+
+      $("#login").button().on("click", function(e){
+        if($(this).html()=='로그인'){
+          $("#dialog-login").dialog("open");
+          e.preventDefault();
+        }else{
+          location.href ="http://localhost:3000/join/logout";
+        }
+      });
+
+      $("#write").button().on("click", function(e){
+        if(<%=user.length%> > 1){
+          location.href ="http://localhost:3000/board/write";
+        }else{
+          $("#dialog-write").dialog("open");
+        }
+      });
+
+      $("#join").button().on("click", function(e){
+        if(<%=user.length%> > 1){
+          $("#dialog-newlogin").dialog("open");
+            e.preventDefault();
+        }
+        else{
+          alert("회원가입 페이지로 이동");
+          location.href ="http://localhost:3000/join";
+        }
+      });
+
+    });
+  </script>
+
+  <table class="table_list" cellspacing="1">
+    <colgroup>
+      <col width="8%" />
+      <col width="*" />
+      <col width="13%" />
+      <col width="8%" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th scope="col">번호</th>
+        <th scope="col">제목</th>
+        <th scope="col">작성자</th>
+        <th scope="col">조회수</th>
+      </tr>
+    </thead>
+    <tbody>
+<%
+      for(var i=rows.length; i>0; i--){
+        var oneItem = rows[i-1];
+%>
+    <tr>
+      <td class="num"><%=oneItem.idx %></td>
+      <td class="title"><a href="/board/read/<%=oneItem.idx %>"><%=oneItem.title %></a></td>
+      <td class="num"><%=oneItem.creator_id %></td>
+      <td class="num"><%=oneItem.hit %></td>
+    </tr>
+<%
+  }
+%>
+    </tbody>
+  </table>
+  <div id="dialog-newlogin" title="회원가입">
+    <h4>로그인된 상태입니다. <br>확인을 누르면 로그아웃합니다.<br>로그인 id : <%=user %></h4>
+  </div>
+  <div id="dialog-login" title="로그인">
+      <p>id:  <input type="text" name="username" id="username" palceholder="username"></p>
+      <p>pw: <input type="password" name="password" id="password" palceholder="password"></p>
+  </div>
+  <div id="dialog-write" title="로그인이 필요합니다.">
+      <h4>글 쓰기는 로그인이 필요합니다</h4>
+  </div>
+</body>
+</html>

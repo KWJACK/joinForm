@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/jqueryui/jquery-ui.css"/>
+  <link rel="stylesheet" href="/stylesheets/style.css" />
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="/jqueryui/jquery-ui.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <title><%= title %></title>
+</head>
+<body>
+  <h1><%= title %></h1>
+  <form action="/board/update" method="post" enctype="multipart/form-data">
+    <table class="table_list">
+      <colgroup>
+        <col width="15%" />
+        <col width="*%" />
+      </colgroup>
+      <input type="hidden" name="idx" value="<%= row.idx%>">
+      <tr class="table_col_title">
+        <td class="title_real" >작성자</td>
+        <td class="title_content"><input type="text" name="creator_id" id="creator_id" value="<%=row.creator_id %>" required readonly></td>
+      </tr>
+      <tr class="table_col_title">
+        <td class="title_real">제목</td>
+        <td class="title_content"><input type="text" name="title" id="title" value="<%=row.title %>"  required></td>
+      </tr>
+      <tr class="table_col_title">
+        <td class="title_real">조회수</td>
+        <td class="title_content"><%=row.hit%></td>
+      </tr>
+      <tr class="table_col_title">
+        <td class="title_real">내용</td>
+        <td class="title_content"><textarea name="content" id ="content" rows="10" cols="60" textarea style="width:100%; height:100%; border:0; background:clear;" required><%=row.content %></textarea></td>
+      </tr>
+      <tr class="table_col_title">
+        <td class="title_real">이미지</td>
+        <td class="title_content">
+          <span><%=row.image%></span>
+          <input type="file" name="attachFile" id="attachFile" accept=".jpg,.jpeg,.png,.gif,.bmp">
+        </td>
+      </tr>
+      <tr class="table_col_title">
+        <td class="title_real">패스워드</td>
+        <td class="title_content"><input type="password" name="password" id="password" required></td>
+      </tr>
+      <tr>
+        <td colspan="2" class="title_content" style="float:left;">
+          <button type="submit" id="btnWrite">글쓰기</button>
+        </td>
+      </tr>
+    </table>
+  </form>
+  <script>
+
+  $("#btnWrite").button().on("click", ()=>{
+    if( $("#creator_id").val().trim() =="")
+    {
+      var message = "아이디를 입력해 주세요";
+      $("#creator_id").val("");
+      $("#creator_id").focus();
+      alert(message);
+      return false;
+    }
+    if( $("#title").val().trim() =="")
+    {
+      var message = "제목을 입력해 주세요";
+      $("#title").val("");
+      $("#title").focus();
+      alert(message);
+      return false;
+    }
+    if( $("#content").val().trim() =="")
+    {
+      var message = "내용을 입력해 주세요";
+      $("#content").val("");
+      $("#content").focus();
+      alert(message);
+      return false;
+    }
+    if( $("#password").val().trim() =="")
+    {
+      var message = "비밀번호을 입력해 주세요";
+      $("#password").val("");
+      $("#password").focus();
+      alert(message);
+      return false;
+    }
+  })
+
+
+  </script>
+</body>
+</html>
