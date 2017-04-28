@@ -28,7 +28,7 @@ router.use(session({//express-session. session을 사용할 수 있도록 붙임
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: '1thflatk',
+    password: '1111',
     database: 'test'
   })  //서버가 닫히면 session이 초기화 되므로 session을 기록하는 위치
 }));
@@ -72,7 +72,7 @@ var pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   database: 'test',
-  password: '1thflatk'
+  password: '1111'
 });
 
 router.get('/', (req,res, next)=>{
